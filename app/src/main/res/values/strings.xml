@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">EnergySaver</string>
+    
+    <!-- Main UI -->
+    <string name="toggle_energy_saver">Toggle Energy Saver</string>
+    <string name="status_searching">Searching for humans...</string>
+    <string name="status_detected">Human detected!</string>
+    <string name="status_torch_on">Torch: ON</string>
+    <string name="status_torch_off">Torch: OFF</string>
+    
+    <!-- Permissions -->
+    <string name="permission_camera_title">Camera Permission Required</string>
+    <string name="permission_camera_message">EnergySaver needs camera access to detect humans and control lighting automatically.</string>
+    <string name="permission_flashlight_title">Flashlight Permission Required</string>
+    <string name="permission_flashlight_message">EnergySaver needs flashlight access to provide intelligent lighting control.</string>
+    <string name="permission_denied_title">Permission Denied</string>
+    <string name="permission_denied_message">This app cannot function without the required permissions. Please grant permissions in settings.</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="go_to_settings">Go to Settings</string>
+    <string name="cancel">Cancel</string>
+    
+    <!-- Errors -->
+    <string name="error_camera_unavailable">Camera is not available on this device</string>
+    <string name="error_torch_unavailable">Flashlight is not available on this device</string>
+    <string name="error_detection_failed">Human detection service failed</string>
+    <string name="error_general">An unexpected error occurred</string>
+    
+    <!-- Status messages -->
+    <string name="status_initializing">Initializing...</string>
+    <string name="status_ready">Ready</string>
+    <string name="status_error">Error</string>
+</resources>
+
