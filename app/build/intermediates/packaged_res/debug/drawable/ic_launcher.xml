@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#2196F3"/>
+        </shape>
+    </item>
+    
+    <!-- Foreground icon -->
+    <item
+        android:width="72dp"
+        android:height="72dp"
+        android:gravity="center">
+        <vector
+            android:width="72dp"
+            android:height="72dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <!-- Light bulb -->
+            <path
+                android:fillColor="#FFFFFF"
+                android:pathData="M12,2C9.24,2 7,4.24 7,7c0,2.24 1.47,4.19 3.5,4.88V14h-1v2h1v1h-1v2h1v1h4v-1h1v-2h-1v-1h1v-2h-1v-2.12C16.53,11.19 18,9.24 18,7C18,4.24 15.76,2 12,2zM12,4.5c1.38,0 2.5,1.12 2.5,2.5s-1.12,2.5 -2.5,2.5S9.5,8.38 9.5,7S10.62,4.5 12,4.5z"/>
+            <!-- Lightning bolt -->
+            <path
+                android:fillColor="#FFC107"
+                android:pathData="M13,8l-2,3h1.5l-1,2 2,-3h-1.5z"/>
+        </vector>
+    </item>
+</layer-list>

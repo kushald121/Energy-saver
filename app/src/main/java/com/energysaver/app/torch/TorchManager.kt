@@ -49,26 +49,34 @@ class TorchManager {
     }
     
     fun enableTorch() {
-        val cameraManager = cameraManager ?: throw IllegalStateException("Camera manager not initialized")
-        val cameraId = cameraId ?: throw IllegalStateException("No camera with flash found")
+        val cameraManager = cameraManager ?: return
+        val cameraId = cameraId ?: return
         
         try {
             cameraManager.setTorchMode(cameraId, true)
             isTorchEnabled = true
         } catch (e: CameraAccessException) {
-            throw RuntimeException("Failed to enable torch", e)
+            // Silently fail - torch may be in use by camera
+            isTorchEnabled = false
+        } catch (e: Exception) {
+            // Handle any other exceptions
+            isTorchEnabled = false
         }
     }
     
     fun disableTorch() {
-        val cameraManager = cameraManager ?: throw IllegalStateException("Camera manager not initialized")
-        val cameraId = cameraId ?: throw IllegalStateException("No camera with flash found")
+        val cameraManager = cameraManager ?: return
+        val cameraId = cameraId ?: return
         
         try {
             cameraManager.setTorchMode(cameraId, false)
             isTorchEnabled = false
         } catch (e: CameraAccessException) {
-            throw RuntimeException("Failed to disable torch", e)
+            // Silently fail
+            isTorchEnabled = false
+        } catch (e: Exception) {
+            // Handle any other exceptions
+            isTorchEnabled = false
         }
     }
     

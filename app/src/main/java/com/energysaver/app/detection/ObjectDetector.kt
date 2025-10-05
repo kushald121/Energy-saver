@@ -26,8 +26,8 @@ class ObjectDetector {
         // Configure object detector for person detection
         val options = ObjectDetectorOptions.Builder()
             .setDetectorMode(ObjectDetectorOptions.STREAM_MODE)
-            .enableMultipleObjects(false)
-            .enableClassification(false)
+            .enableMultipleObjects()
+            .enableClassification()
             .build()
         
         detector = ObjectDetection.getClient(options)
@@ -81,21 +81,25 @@ class ObjectDetector {
     
     private fun isHumanDetected(detectedObjects: List<DetectedObject>): Boolean {
         // Check if any detected object is a person
-        // ML Kit object detection without classification will detect various objects
-        // We'll consider any detection as potential human presence
-        // In a more sophisticated implementation, you could use pose detection
-        // or custom models trained specifically for human detection
+        // ML Kit object detection with classification will identify object labels
+        // We look for objects with reasonable confidence that might be humans
         
         return detectedObjects.isNotEmpty() && 
-               detectedObjects.any { object ->
-                   // Basic validation: check if the detected object has reasonable size
-                   // and is positioned in the upper portion of the frame (typical for upper body)
-                   val boundingBox = object.boundingBox
-                   val centerY = boundingBox.centerY()
-                   val frameHeight = boundingBox.height() // This would need actual frame height
-                   
-                   // Consider it a person if detected in upper 60% of frame
-                   centerY < frameHeight * 0.6f
+               detectedObjects.any { detectedObject ->
+                   // Check if object has labels
+                   if (detectedObject.labels.isNotEmpty()) {
+                       // Look for person-related labels or just accept any reasonably-sized object
+                       true
+                   } else {
+                       // Without classification, accept any detected object
+                       // Basic validation: check if the detected object has reasonable size
+                       val boundingBox = detectedObject.boundingBox
+                       val objectWidth = boundingBox.width()
+                       val objectHeight = boundingBox.height()
+                       
+                       // Consider it a person if object is reasonably sized (not too small)
+                       objectWidth > 100 && objectHeight > 100
+                   }
                }
     }
     

@@ -60,8 +60,7 @@ class MainActivity : AppCompatActivity() {
     
     private fun requestPermissions() {
         val requiredPermissions = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.FLASHLIGHT
+            Manifest.permission.CAMERA
         )
         
         permissionManager.requestPermissions(requiredPermissions) { granted ->
@@ -74,16 +73,21 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun initializeApp() {
-        viewModel.initializeApp(this)
-        
-        // Set up camera and detection
-        val imageAnalyzer = viewModel.getObjectDetector().createImageAnalyzer()
-        viewModel.getCameraManager().bindToLifecycle(
-            this,
-            this,
-            binding.cameraPreview,
-            imageAnalyzer
-        )
+        try {
+            viewModel.initializeApp(this)
+            
+            // Set up camera and detection
+            val imageAnalyzer = viewModel.getObjectDetector().createImageAnalyzer()
+            viewModel.getCameraManager().bindToLifecycle(
+                this,
+                this,
+                binding.cameraPreview,
+                imageAnalyzer
+            )
+        } catch (e: Exception) {
+            showError("Failed to initialize camera: ${e.message}")
+            binding.toggleButton.isEnabled = false
+        }
     }
     
     private fun updateUI(state: MainViewModel.UIState) {

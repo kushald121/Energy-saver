@@ -58,8 +58,7 @@ class PermissionManager(
     
     fun hasRequiredPermissions(): Boolean {
         val requiredPermissions = arrayOf(
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.FLASHLIGHT
+            android.Manifest.permission.CAMERA
         )
         
         return requiredPermissions.all { permission ->

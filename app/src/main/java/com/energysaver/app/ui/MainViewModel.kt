@@ -54,7 +54,10 @@ class MainViewModel : ViewModel() {
                 
                 // Initialize controllers
                 torchController = TorchController(torchManager)
-                detectionDebouncer = DetectionDebouncer()
+                detectionDebouncer = DetectionDebouncer(
+                    debounceDelayMs = 500L,
+                    coroutineScope = viewModelScope
+                )
                 
                 // Set up detection callback
                 objectDetector.setOnDetectionCallback { detected ->
@@ -87,7 +90,7 @@ class MainViewModel : ViewModel() {
                 )
                 
             } catch (e: Exception) {
-                _errorMessage.value = e.message ?: "Failed to initialize app"
+                _errorMessage.value = "Initialization failed: ${e.message}"
                 _uiState.value = _uiState.value?.copy(
                     isLoading = false,
                     isReady = false,

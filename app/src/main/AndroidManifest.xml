@@ -5,9 +5,6 @@
     <!-- Camera permission for human detection -->
     <uses-permission android:name="android.permission.CAMERA" />
     
-    <!-- Flashlight permission for torch control -->
-    <uses-permission android:name="android.permission.FLASHLIGHT" />
-    
     <!-- Feature declarations -->
     <uses-feature
         android:name="android.hardware.camera"

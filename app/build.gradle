@@ -57,8 +57,19 @@ dependencies {
     implementation 'com.google.mlkit:object-detection:17.0.1'
     implementation 'com.google.mlkit:object-detection-custom:17.0.1'
     
+    // Unit testing
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
+    testImplementation 'org.mockito:mockito-core:5.5.0'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
+    
+    // Android instrumentation testing
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'
+    androidTestImplementation 'org.hamcrest:hamcrest-library:2.2'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }

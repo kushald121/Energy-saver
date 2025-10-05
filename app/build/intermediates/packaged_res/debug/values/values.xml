@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="http://schemas.android.com/tools">
+    <color name="black">#FF000000</color>
+    <color name="ic_launcher_background">#2196F3</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="status_detected">#FF4CAF50</color>
+    <color name="status_error">#FFF44336</color>
+    <color name="status_searching">#FFFF9800</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="torch_off">#FF9E9E9E</color>
+    <color name="torch_on">#FFFFEB3B</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">EnergySaver</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_camera_unavailable">Camera is not available on this device</string>
+    <string name="error_detection_failed">Human detection service failed</string>
+    <string name="error_general">An unexpected error occurred</string>
+    <string name="error_torch_unavailable">Flashlight is not available on this device</string>
+    <string name="go_to_settings">Go to Settings</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="permission_camera_message">EnergySaver needs camera access to detect humans and control lighting automatically.</string>
+    <string name="permission_camera_title">Camera Permission Required</string>
+    <string name="permission_denied_message">This app cannot function without the required permissions. Please grant permissions in settings.</string>
+    <string name="permission_denied_title">Permission Denied</string>
+    <string name="permission_flashlight_message">EnergySaver needs flashlight access to provide intelligent lighting control.</string>
+    <string name="permission_flashlight_title">Flashlight Permission Required</string>
+    <string name="status_detected">Human detected!</string>
+    <string name="status_error">Error</string>
+    <string name="status_initializing">Initializing...</string>
+    <string name="status_ready">Ready</string>
+    <string name="status_searching">Searching for humans...</string>
+    <string name="status_torch_off">Torch: OFF</string>
+    <string name="status_torch_on">Torch: ON</string>
+    <string name="toggle_energy_saver">Toggle Energy Saver</string>
+    <style name="Theme.EnergySaver" parent="Theme.Material3.DayNight">
+        
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        
+        <item name="android:statusBarColor" ns1:targetApi="l">?attr/colorPrimaryVariant</item>
+        
+    </style>
+</resources>
