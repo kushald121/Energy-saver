@@ -48,35 +48,67 @@ class TorchManager {
         return cameraId != null
     }
     
-    fun enableTorch() {
-        val cameraManager = cameraManager ?: return
-        val cameraId = cameraId ?: return
+    fun enableTorch(): Boolean {
+        android.util.Log.d("TorchManager", "enableTorch called")
+        val cameraManager = cameraManager
+        val cameraId = cameraId
         
-        try {
+        if (cameraManager == null) {
+            android.util.Log.e("TorchManager", "CameraManager is null")
+            return false
+        }
+        
+        if (cameraId == null) {
+            android.util.Log.e("TorchManager", "CameraId is null - no camera with flash found")
+            return false
+        }
+        
+        return try {
+            android.util.Log.d("TorchManager", "Setting torch mode to true for camera $cameraId")
             cameraManager.setTorchMode(cameraId, true)
             isTorchEnabled = true
+            android.util.Log.d("TorchManager", "Torch enabled successfully")
+            true
         } catch (e: CameraAccessException) {
-            // Silently fail - torch may be in use by camera
+            android.util.Log.e("TorchManager", "CameraAccessException: ${e.message}", e)
             isTorchEnabled = false
+            false
         } catch (e: Exception) {
-            // Handle any other exceptions
+            android.util.Log.e("TorchManager", "Exception enabling torch: ${e.message}", e)
             isTorchEnabled = false
+            false
         }
     }
     
-    fun disableTorch() {
-        val cameraManager = cameraManager ?: return
-        val cameraId = cameraId ?: return
+    fun disableTorch(): Boolean {
+        android.util.Log.d("TorchManager", "disableTorch called")
+        val cameraManager = cameraManager
+        val cameraId = cameraId
         
-        try {
+        if (cameraManager == null) {
+            android.util.Log.e("TorchManager", "CameraManager is null")
+            return false
+        }
+        
+        if (cameraId == null) {
+            android.util.Log.e("TorchManager", "CameraId is null - no camera with flash found")
+            return false
+        }
+        
+        return try {
+            android.util.Log.d("TorchManager", "Setting torch mode to false for camera $cameraId")
             cameraManager.setTorchMode(cameraId, false)
             isTorchEnabled = false
+            android.util.Log.d("TorchManager", "Torch disabled successfully")
+            true
         } catch (e: CameraAccessException) {
-            // Silently fail
+            android.util.Log.e("TorchManager", "CameraAccessException: ${e.message}", e)
             isTorchEnabled = false
+            false
         } catch (e: Exception) {
-            // Handle any other exceptions
+            android.util.Log.e("TorchManager", "Exception disabling torch: ${e.message}", e)
             isTorchEnabled = false
+            false
         }
     }
     

@@ -19,34 +19,44 @@ class TorchController(
     private var deactivationJob: Job? = null
     
     fun requestTorchActivation() {
+        android.util.Log.d("TorchController", "requestTorchActivation called")
         // Cancel any pending deactivation
         deactivationJob?.cancel()
         
         // Cancel any pending activation and start new one
         activationJob?.cancel()
         activationJob = coroutineScope.launch {
+            android.util.Log.d("TorchController", "Waiting ${activationDelayMs}ms before activating torch")
             delay(activationDelayMs)
             try {
-                torchManager.enableTorch()
-                _torchState.value = TorchState.ON
+                android.util.Log.d("TorchController", "Calling torchManager.enableTorch()")
+                val success = torchManager.enableTorch()
+                android.util.Log.d("TorchController", "enableTorch returned: $success")
+                _torchState.value = if (success) TorchState.ON else TorchState.ERROR
             } catch (e: Exception) {
+                android.util.Log.e("TorchController", "Failed to enable torch", e)
                 _torchState.value = TorchState.ERROR
             }
         }
     }
     
     fun requestTorchDeactivation() {
+        android.util.Log.d("TorchController", "requestTorchDeactivation called")
         // Cancel any pending activation
         activationJob?.cancel()
         
         // Cancel any pending deactivation and start new one
         deactivationJob?.cancel()
         deactivationJob = coroutineScope.launch {
+            android.util.Log.d("TorchController", "Waiting ${deactivationDelayMs}ms before deactivating torch")
             delay(deactivationDelayMs)
             try {
-                torchManager.disableTorch()
-                _torchState.value = TorchState.OFF
+                android.util.Log.d("TorchController", "Calling torchManager.disableTorch()")
+                val success = torchManager.disableTorch()
+                android.util.Log.d("TorchController", "disableTorch returned: $success")
+                _torchState.value = if (success) TorchState.OFF else TorchState.ERROR
             } catch (e: Exception) {
+                android.util.Log.e("TorchController", "Failed to disable torch", e)
                 _torchState.value = TorchState.ERROR
             }
         }

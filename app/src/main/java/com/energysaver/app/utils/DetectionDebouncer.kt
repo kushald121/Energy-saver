@@ -17,6 +17,7 @@ class DetectionDebouncer(
     private var lastDetectionValue = false
     
     fun updateDetection(detected: Boolean) {
+        android.util.Log.d("DetectionDebouncer", "updateDetection called with: $detected")
         lastDetectionValue = detected
         
         // Cancel previous job
@@ -24,7 +25,9 @@ class DetectionDebouncer(
         
         // Start new debounced job
         detectionJob = coroutineScope.launch {
+            android.util.Log.d("DetectionDebouncer", "Waiting ${debounceDelayMs}ms before emitting: $detected")
             delay(debounceDelayMs)
+            android.util.Log.d("DetectionDebouncer", "Emitting debounced value: $detected")
             _debouncedDetection.value = detected
         }
     }

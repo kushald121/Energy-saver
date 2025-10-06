@@ -105,9 +105,13 @@ class MainViewModel : ViewModel() {
                 // Observe debounced detection
                 detectionDebouncer?.debouncedDetection
                     ?.onEach { detected ->
+                        Log.d(TAG, "Debounced detection: $detected, isEnergySaverEnabled: $isEnergySaverEnabled")
                         _uiState.value = _uiState.value?.copy(humanDetected = detected)
                         if (isEnergySaverEnabled) {
+                            Log.d(TAG, "Calling updateTorchState with: $detected")
                             updateTorchState(detected)
+                        } else {
+                            Log.d(TAG, "Energy saver is disabled, not updating torch")
                         }
                     }
                     ?.launchIn(viewModelScope)
@@ -167,13 +171,16 @@ class MainViewModel : ViewModel() {
     }
     
     private fun updateTorchState(humanDetected: Boolean) {
+        Log.d(TAG, "updateTorchState called with humanDetected: $humanDetected")
         torchController?.let { controller ->
             if (humanDetected) {
+                Log.d(TAG, "Requesting torch activation")
                 controller.requestTorchActivation()
             } else {
+                Log.d(TAG, "Requesting torch deactivation")
                 controller.requestTorchDeactivation()
             }
-        }
+        } ?: Log.e(TAG, "TorchController is null!")
     }
     
     fun cleanup() {
