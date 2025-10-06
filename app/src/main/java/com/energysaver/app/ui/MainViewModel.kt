@@ -1,6 +1,7 @@
 package com.energysaver.app.ui
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,11 +17,15 @@ import kotlinx.coroutines.flow.onEach
 
 class MainViewModel : ViewModel() {
     
-    private val cameraManager = CameraManager()
-    private val objectDetector = ObjectDetector()
-    private val torchManager = TorchManager()
-    private lateinit var torchController: TorchController
-    private lateinit var detectionDebouncer: DetectionDebouncer
+    companion object {
+        private const val TAG = "MainViewModel"
+    }
+    
+    private var cameraManager: CameraManager? = null
+    private var objectDetector: ObjectDetector? = null
+    private var torchManager: TorchManager? = null
+    private var torchController: TorchController? = null
+    private var detectionDebouncer: DetectionDebouncer? = null
     
     private val _uiState = MutableLiveData(UIState())
     val uiState: LiveData<UIState> = _uiState
@@ -32,7 +37,7 @@ class MainViewModel : ViewModel() {
     private var isInitialized = false
     
     data class UIState(
-        val isLoading: Boolean = true,
+        val isLoading: Boolean = false,
         val isReady: Boolean = false,
         val humanDetected: Boolean = false,
         val torchEnabled: Boolean = false,
@@ -40,101 +45,143 @@ class MainViewModel : ViewModel() {
     )
     
     fun initializeApp(context: Context) {
-        if (isInitialized) return
+        if (isInitialized) {
+            Log.d(TAG, "Already initialized, skipping")
+            return
+        }
         
+        Log.d(TAG, "Starting initialization")
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value?.copy(isLoading = true)
                 
-                // Initialize components
-                cameraManager.initialize()
-                objectDetector.initialize()
-                torchManager.initialize()
-                torchManager.setContext(context)
+                // Initialize components with error handling
+                Log.d(TAG, "Initializing CameraManager")
+                cameraManager = CameraManager().apply {
+                    try {
+                        initialize()
+                    } catch (e: Exception) {
+                        Log.e(TAG, "CameraManager initialization failed", e)
+                        throw e
+                    }
+                }
+                
+                Log.d(TAG, "Initializing ObjectDetector")
+                objectDetector = ObjectDetector().apply {
+                    try {
+                        initialize()
+                    } catch (e: Exception) {
+                        Log.e(TAG, "ObjectDetector initialization failed", e)
+                        throw e
+                    }
+                }
+                
+                Log.d(TAG, "Initializing TorchManager")
+                torchManager = TorchManager().apply {
+                    try {
+                        initialize()
+                        setContext(context)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "TorchManager initialization failed", e)
+                        throw e
+                    }
+                }
                 
                 // Initialize controllers
-                torchController = TorchController(torchManager)
+                Log.d(TAG, "Initializing TorchController")
+                torchController = torchManager?.let { TorchController(it) }
+                
+                Log.d(TAG, "Initializing DetectionDebouncer")
                 detectionDebouncer = DetectionDebouncer(
                     debounceDelayMs = 500L,
                     coroutineScope = viewModelScope
                 )
                 
                 // Set up detection callback
-                objectDetector.setOnDetectionCallback { detected ->
-                    detectionDebouncer.updateDetection(detected)
+                objectDetector?.setOnDetectionCallback { detected ->
+                    detectionDebouncer?.updateDetection(detected)
                 }
                 
                 // Observe debounced detection
-                detectionDebouncer.debouncedDetection
-                    .onEach { detected ->
+                detectionDebouncer?.debouncedDetection
+                    ?.onEach { detected ->
                         _uiState.value = _uiState.value?.copy(humanDetected = detected)
                         if (isEnergySaverEnabled) {
                             updateTorchState(detected)
                         }
                     }
-                    .launchIn(viewModelScope)
+                    ?.launchIn(viewModelScope)
                 
                 // Observe torch state
-                torchController.torchState
-                    .onEach { state ->
+                torchController?.torchState
+                    ?.onEach { state ->
                         _uiState.value = _uiState.value?.copy(
                             torchEnabled = state == TorchController.TorchState.ON
                         )
                     }
-                    .launchIn(viewModelScope)
+                    ?.launchIn(viewModelScope)
                 
                 isInitialized = true
+                Log.d(TAG, "Initialization completed successfully")
                 _uiState.value = _uiState.value?.copy(
                     isLoading = false,
-                    isReady = true
+                    isReady = true,
+                    error = null
                 )
                 
             } catch (e: Exception) {
-                _errorMessage.value = "Initialization failed: ${e.message}"
+                Log.e(TAG, "Initialization failed", e)
+                _errorMessage.value = "Failed to initialize: ${e.message}"
                 _uiState.value = _uiState.value?.copy(
                     isLoading = false,
                     isReady = false,
-                    error = e.message
+                    error = "Initialization failed: ${e.message}"
                 )
             }
         }
     }
     
-    fun getCameraManager(): CameraManager = cameraManager
-    fun getObjectDetector(): ObjectDetector = objectDetector
+    fun getCameraManager(): CameraManager? = cameraManager
+    fun getObjectDetector(): ObjectDetector? = objectDetector
     
     fun toggleEnergySaver() {
+        if (!isInitialized || objectDetector == null || torchManager == null) {
+            Log.e(TAG, "Cannot toggle energy saver - not initialized")
+            _errorMessage.value = "System not ready. Please wait for initialization."
+            return
+        }
+        
         isEnergySaverEnabled = !isEnergySaverEnabled
+        Log.d(TAG, "Energy saver toggled: $isEnergySaverEnabled")
         
         if (isEnergySaverEnabled) {
             // Start detection and control torch based on detection
-            objectDetector.startDetection()
+            objectDetector?.startDetection()
             updateTorchState(_uiState.value?.humanDetected ?: false)
         } else {
             // Stop detection and turn off torch
-            objectDetector.stopDetection()
-            torchManager.disableTorch()
+            objectDetector?.stopDetection()
+            torchManager?.disableTorch()
             _uiState.value = _uiState.value?.copy(torchEnabled = false)
         }
     }
     
     private fun updateTorchState(humanDetected: Boolean) {
-        if (humanDetected) {
-            torchController.requestTorchActivation()
-        } else {
-            torchController.requestTorchDeactivation()
+        torchController?.let { controller ->
+            if (humanDetected) {
+                controller.requestTorchActivation()
+            } else {
+                controller.requestTorchDeactivation()
+            }
         }
     }
     
     fun cleanup() {
-        cameraManager.cleanup()
-        objectDetector.cleanup()
-        torchManager.cleanup()
-        if (::torchController.isInitialized) {
-            torchController.cleanup()
-        }
-        if (::detectionDebouncer.isInitialized) {
-            detectionDebouncer.cleanup()
-        }
+        Log.d(TAG, "Cleaning up resources")
+        cameraManager?.cleanup()
+        objectDetector?.cleanup()
+        torchManager?.cleanup()
+        torchController?.cleanup()
+        detectionDebouncer?.cleanup()
     }
 }
